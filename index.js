@@ -1,12 +1,24 @@
 #!/usr/bin/env node
-const argv = require('minimist')(process.argv.slice(2));
+const argv = require('minimist')(process.argv.slice(2), { boolean: true });
 const path = require('path');
 const { isString } = require('lodash');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const writeFile = require('write');
 
-if (!argv.file || !isString(argv.file)) throw new Error('--file must be a valid file');
+const OPTIONS = {
+  h: {
+    description: 'Lists available options',
+  },
+  file: {
+    description:
+      'Openshift template or object definition file to cleanup, usage oc-clean-template-things --file=[path to file]',
+  },
+  asTemplate: {
+    description:
+      'Converts an Object Definition file to a template, this replaces the object definition file, usage oc-clean-template-things --file=[...] --asTemplate=true',
+  },
+};
 
 const KINDS = {
   ReplicationController: 'ReplicationController',
@@ -31,6 +43,23 @@ const isObjectBlackListed = object => {
   return BLACK_LISTED_OBJECTS[object.kind];
 };
 
+const listAvailableCommands = () => {
+  console.log('Version: ', require('./package.json').version);
+  console.log('Available commands: \n');
+  const keys = Object.keys(OPTIONS);
+  const largestPadding = keys.reduce((num, key) => {
+    if (key.length > num) return key.length;
+    return num;
+  }, 0);
+
+  keys.forEach(key => {
+    const dash = key.length === 1 ? '-' : '--';
+    const padding = largestPadding - key.length + (key.length === 1 ? 1 : 0);
+
+    console.log(`\t${dash}${key}: ${' '.repeat(padding)} ${OPTIONS[key].description}`);
+  });
+};
+
 const shouldKeepObject = object => !isObjectBlackListed(object);
 
 const isFileTemplate = data => data.kind === KINDS.Template;
@@ -40,22 +69,30 @@ const getFile = filePath => fs.readFileSync(path.join(process.cwd(), filePath));
 const runPlugins = (data, plugins) => plugins.reduce((data, plugin) => plugin(data), data);
 
 const filterUselessAttributes = () => {
+  if (!argv.file || !isString(argv.file)) throw new Error('--file must be a valid file');
   const file = yaml.safeLoad(getFile(argv.file));
+  const convertingToTemplate = !!argv.asTemplate;
   if (isFileTemplate(file)) {
     state = {
       ...state,
       itteratingOverTemplate: true,
       itteratingKey: 'objects',
     };
+    if (convertingToTemplate) {
+      console.log("asTemplate was set to 'true' but the file is already a template");
+    }
   }
   try {
-    const data = runPlugins(file, [
+    let data = runPlugins(file, [
       stripOutUselessObjects,
       filterOutMetadata,
       filterOutStatusFromObjects,
       filterOutUid,
       filterOutClusterIp,
     ]);
+    if (convertingToTemplate && !state.itteratingOverTemplate) {
+      data = convertToTemplate(data);
+    }
     writeToFile(data, argv.file);
   } catch (e) {
     console.log('ERROR!! \n\n');
@@ -76,7 +113,9 @@ const filterOutMetadata = data => ({
     ({
       metadata: { creationTimestamp, selfLink, namespace, resourceVersion, ...metadata },
       ...item
-    }) => ({ ...item, metadata }),
+    }) => {
+      return { ...item, metadata };
+    },
   ),
 });
 
@@ -104,9 +143,26 @@ const stripOutUselessObjects = data => ({
   [state.itteratingKey]: data[state.itteratingKey].filter(shouldKeepObject),
 });
 
+const convertToTemplate = data => {
+  const template = {
+    kind: KINDS.Template,
+    apiVersion: 'v1',
+    objects: data.items,
+  };
+  return template;
+};
+
 const writeToFile = (data, filePath) => {
   const yamlText = yaml.safeDump(data);
   writeFile(filePath, yamlText);
 };
 
-filterUselessAttributes();
+const main = () => {
+  if (argv.h) {
+    listAvailableCommands();
+  } else {
+    filterUselessAttributes();
+  }
+};
+
+main();

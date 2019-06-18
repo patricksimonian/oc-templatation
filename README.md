@@ -26,17 +26,18 @@ Strips out:
 then
 `oc-clean-template-things --file=[path to file]`
 
+Getting options is as easy as `oc-clean-template-things -h`
+
 ### Roadmap
 
 ### Suggested
 > pr your suggestions in here in a list
 
 - template linting/verification
-- add eslint/prettier
 - testing setup with mocha/chai
 
 ### Planned
 
 ### Working on
 
-- removing pods from templates
+- no suggestions yet! Make an [issue!](https://github.com/patricksimonian/oc-templation/issues/new)

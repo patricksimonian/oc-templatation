@@ -16,9 +16,9 @@ Strips out:
 - metadata.namespace
 - metadata.resourceVersion
 - uids
-- useless openshift objects like replica sets and replication controllers
+- useless openshift objects like replica sets and replication controllers and pods
 
-
+Optionally it can convert a list into a template
 
 ## How to use
 > requires Node JS 10.15.3 or higher
@@ -27,6 +27,12 @@ then
 `oc-clean-template-things --file=[path to file]`
 
 Getting options is as easy as `oc-clean-template-things -h`
+
+### Flags
+
+`--file=./path to file` path to the tempalte/list file
+`--doNotStrip=true|false`  defaults to false, set to true if you do not want objects to be stripped from your manifests
+`--asTemplate=true|false` defaults to false, this will convert your cleaned List file to a template
 
 ### Roadmap
 

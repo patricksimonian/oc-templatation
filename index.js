@@ -18,6 +18,10 @@ const OPTIONS = {
     description:
       'Converts an Object Definition file to a template, this replaces the object definition file, usage oc-clean-template-things --file=[...] --asTemplate=true',
   },
+  doNotStrip: {
+    description:
+      'Objects not needed for a Template are typically stripped (ReplicaSet, Pods) etc, this disables this feature',
+  },
 };
 
 const KINDS = {
@@ -26,6 +30,8 @@ const KINDS = {
   Template: 'Template',
   ReplicaSet: 'ReplicaSet',
   Pod: 'Pod',
+  List: 'List',
+  Route: 'Route',
 };
 
 const BLACK_LISTED_OBJECTS = {
@@ -60,9 +66,13 @@ const listAvailableCommands = () => {
   });
 };
 
+const isStandaloneObject = object => !isFileTemplate(object) && !isList(object);
+
 const shouldKeepObject = object => !isObjectBlackListed(object);
 
 const isFileTemplate = data => data.kind === KINDS.Template;
+
+const isList = data => data.kind === KINDS.List;
 
 const getFile = filePath => fs.readFileSync(path.join(process.cwd(), filePath));
 
@@ -70,9 +80,20 @@ const runPlugins = (data, plugins) => plugins.reduce((data, plugin) => plugin(da
 
 const filterUselessAttributes = () => {
   if (!argv.file || !isString(argv.file)) throw new Error('--file must be a valid file');
-  const file = yaml.safeLoad(getFile(argv.file));
+  let file = yaml.safeLoad(getFile(argv.file));
   const convertingToTemplate = !!argv.asTemplate;
-  if (isFileTemplate(file)) {
+  const pluginsToRun = [
+    !argv.doNotStrip ? stripOutUselessObjects : fillerPlugin,
+    filterOutMetadata,
+    filterOutStatusFromObjects,
+    filterOutUid,
+    filterOutClusterIp,
+  ];
+
+  if (isStandaloneObject(file)) {
+    // if standalone do not use the stripOutUlessObjects plugin
+    file = convertToList(file);
+  } else if (isFileTemplate(file)) {
     state = {
       ...state,
       itteratingOverTemplate: true,
@@ -83,13 +104,7 @@ const filterUselessAttributes = () => {
     }
   }
   try {
-    let data = runPlugins(file, [
-      stripOutUselessObjects,
-      filterOutMetadata,
-      filterOutStatusFromObjects,
-      filterOutUid,
-      filterOutClusterIp,
-    ]);
+    let data = runPlugins(file, pluginsToRun);
     if (convertingToTemplate && !state.itteratingOverTemplate) {
       data = convertToTemplate(data);
     }
@@ -106,7 +121,7 @@ const filterOutStatusFromObjects = data => ({
     ...item,
   })),
 });
-
+const fillerPlugin = data => data;
 const filterOutMetadata = data => ({
   ...data,
   [state.itteratingKey]: data[state.itteratingKey].map(
@@ -141,6 +156,12 @@ const filterOutClusterIp = data => ({
 const stripOutUselessObjects = data => ({
   ...data,
   [state.itteratingKey]: data[state.itteratingKey].filter(shouldKeepObject),
+});
+
+const convertToList = object => ({
+  kind: KINDS.List,
+  apiVersion: 'v1',
+  items: [object],
 });
 
 const convertToTemplate = data => {

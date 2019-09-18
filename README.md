@@ -30,9 +30,9 @@ Getting options is as easy as `oc-clean-template-things -h`
 
 ### Flags
 
-`--file=./path to file` path to the tempalte/list file
-`--doNotStrip=true|false`  defaults to false, set to true if you do not want objects to be stripped from your manifests
-`--asTemplate=true|false` defaults to false, this will convert your cleaned List file to a template
+- `--file=./path to file` path to the tempalte/list file
+- `--doNotStrip=true|false`  defaults to false, set to true if you do not want objects to be stripped from your manifests
+- `--asTemplate=true|false` defaults to false, this will convert your cleaned List file to a template
 
 ### Roadmap
 

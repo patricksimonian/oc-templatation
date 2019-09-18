@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/patricksimonian/devops-platform-workshops-labs.git"
+    "url": "git+https://github.com/patricksimonian/oc-templatation.git"
   },
   "keywords": [],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/patricksimonian/devops-platform-workshops-labs/issues"
+    "url": "https://github.com/patricksimonian/oc-templatation/issues"
   },
-  "homepage": "https://github.com/patricksimonian/devops-platform-workshops-labs#readme",
+  "homepage": "https://github.com/patricksimonian/oc-templatation#readme",
   "dependencies": {
     "husky": "^2.3.0",
     "js-yaml": "^3.13.1",

@@ -1,0 +1,7 @@
+src
+.vscode
+.prettierrc
+.prettierignore
+.eslintrc
+.eslintignore
+.babelrc

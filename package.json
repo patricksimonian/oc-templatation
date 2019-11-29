@@ -1,13 +1,15 @@
 {
-  "name": "oc-clean-template-things",
-  "version": "1.1.1",
+  "name": "@bcgov/oc-template",
+  "version": "2.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d dist",
+    "prepare": "npm run build"
   },
   "bin": {
-    "oc-clean-template-things": "index.js"
+    "oct": "dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,15 +23,17 @@
   },
   "homepage": "https://github.com/patricksimonian/oc-templatation#readme",
   "dependencies": {
+    "commander": "^4.0.1",
     "husky": "^2.3.0",
     "js-yaml": "^3.13.1",
     "lint-staged": "^8.1.7",
-    "lodash": "^4.17.15",
-    "minimist": "^1.2.0",
     "read-file-relative": "^1.2.0",
     "write": "^1.0.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-prettier": "^3.1.0",

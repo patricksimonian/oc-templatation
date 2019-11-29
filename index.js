@@ -121,7 +121,9 @@ const filterOutStatusFromObjects = data => ({
     ...item,
   })),
 });
+
 const fillerPlugin = data => data;
+
 const filterOutMetadata = data => ({
   ...data,
   [state.itteratingKey]: data[state.itteratingKey].map(

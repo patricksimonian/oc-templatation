@@ -21,10 +21,10 @@
   },
   "homepage": "https://github.com/patricksimonian/devops-platform-workshops-labs#readme",
   "dependencies": {
+    "commander": "^4.0.1",
     "husky": "^2.3.0",
     "js-yaml": "^3.13.1",
     "lint-staged": "^8.1.7",
-    "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "read-file-relative": "^1.2.0",
     "write": "^1.0.3"

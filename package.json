@@ -1,13 +1,15 @@
 {
-  "name": "oc-clean-template-things",
+  "name": "oc-template",
   "version": "1.1.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d dist",
+    "prepare": "npm run build"
   },
   "bin": {
-    "oc-clean-template-things": "index.js"
+    "oct": "dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,9 @@
     "write": "^1.0.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-prettier": "^3.1.0",

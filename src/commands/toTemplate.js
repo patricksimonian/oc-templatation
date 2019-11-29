@@ -10,12 +10,15 @@ import {
   isStandaloneObject,
   convertToList,
   runPlugins,
+  convertToTemplate,
   writeToFile,
 } from '../utils';
+import path from 'path';
 import yaml from 'js-yaml';
 
-export const action = (file, options) => {
+export const action = function(file, options) {
   let jsonData = {};
+
   let isJson = true;
   const pluginsToRun = [
     !options.doNotStrip ? stripOutUselessObjects : fillerPlugin,
@@ -48,7 +51,7 @@ export const action = (file, options) => {
   }
 
   try {
-    let data = runPlugins(file, pluginsToRun);
+    let data = runPlugins(jsonData, pluginsToRun);
 
     data = convertToTemplate(data);
 

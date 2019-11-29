@@ -1,5 +1,7 @@
-import fs, { writeFile } from 'fs';
-import { KINDS } from './constants';
+import fs, { writeFileSync } from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
+import { KINDS, BLACK_LISTED_OBJECTS } from './constants';
 
 export const isObjectBlackListed = object => {
   return BLACK_LISTED_OBJECTS[object.kind];
@@ -22,12 +24,12 @@ export const writeToFile = (data, filePath, isJson) => {
   } else {
     text = yaml.safeDump(data);
   }
-  writeFile(filePath, text);
+  writeFileSync(filePath, text);
 };
 
 export const filterOutStatusFromObjects = data => ({
   ...data,
-  [state.itteratingKey]: data[state.itteratingKey].map(({ status, ...item }) => ({
+  items: data.items.map(({ status, ...item }) => ({
     ...item,
   })),
 });
@@ -36,7 +38,7 @@ export const fillerPlugin = data => data;
 
 export const filterOutMetadata = data => ({
   ...data,
-  [state.itteratingKey]: data[state.itteratingKey].map(
+  items: data.items.map(
     ({
       metadata: { creationTimestamp, selfLink, namespace, resourceVersion, ...metadata },
       ...item
@@ -48,7 +50,7 @@ export const filterOutMetadata = data => ({
 
 export const filterOutUid = data => ({
   ...data,
-  [state.itteratingKey]: data[state.itteratingKey].map(item => {
+  items: data.items.map(item => {
     delete item.metadata.uid;
     return item;
   }),
@@ -56,7 +58,7 @@ export const filterOutUid = data => ({
 
 export const filterOutClusterIp = data => ({
   ...data,
-  [state.itteratingKey]: data[state.itteratingKey].map(item => {
+  items: data.items.map(item => {
     if (item.spec && item.spec.clusterIP) {
       // do not delete uids from replication controllers
       delete item.spec.clusterIP;
@@ -67,7 +69,7 @@ export const filterOutClusterIp = data => ({
 
 export const stripOutUselessObjects = data => ({
   ...data,
-  [state.itteratingKey]: data[state.itteratingKey].filter(shouldKeepObject),
+  items: data.items.filter(shouldKeepObject),
 });
 
 export const convertToList = object => ({

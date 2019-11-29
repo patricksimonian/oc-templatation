@@ -24,7 +24,6 @@ Optionally it can convert a list into a template
 > requires Node JS 10.15.3 or higher
 `npx @bcgov/oc-template -h`
 
-
 ### Roadmap
 1. Auto-parameterizing templates :fire:
 

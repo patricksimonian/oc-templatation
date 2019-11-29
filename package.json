@@ -1,5 +1,5 @@
 {
-  "name": "oc-template",
+  "name": "@bcgov/oc-template",
   "version": "1.1.1",
   "description": "",
   "main": "dist/index.js",
@@ -27,7 +27,6 @@
     "husky": "^2.3.0",
     "js-yaml": "^3.13.1",
     "lint-staged": "^8.1.7",
-    "minimist": "^1.2.0",
     "read-file-relative": "^1.2.0",
     "write": "^1.0.3"
   },

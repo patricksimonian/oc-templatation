@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import commander from 'commander';
 import { version } from '../package.json';
 import { action } from './commands/toTemplate.js';
